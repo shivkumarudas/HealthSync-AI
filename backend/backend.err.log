@@ -1,0 +1,10 @@
+INFO:__main__:Gemini AI configured successfully.
+Traceback (most recent call last):
+  File "D:\heltsync Ai\backend\app.py", line 1052, in <module>
+    seed_admin()
+    ~~~~~~~~~~^^
+  File "D:\heltsync Ai\backend\app.py", line 1007, in seed_admin
+    raise RuntimeError(
+    ...<3 lines>...
+    )
+RuntimeError: The existing admin account still uses the old default password. Set ADMIN_PASSWORD to a new value of at least 12 characters in backend/.env, then restart the app.

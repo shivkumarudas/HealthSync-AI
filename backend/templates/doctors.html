@@ -1,0 +1,123 @@
+{% extends "base.html" %}
+{% block title %}Find Doctors — HealthSync AI{% endblock %}
+
+{% block content %}
+<div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
+    <div class="text-center mb-10 animate-fade-up">
+        <div class="section-badge"><span>🏥</span> Doctor Finder</div>
+        <h1 class="page-title mt-2">Find the Right <span class="text-gradient">Doctor</span></h1>
+        <p class="page-subtitle">Get AI-powered guidance to find the best specialists for your health needs.</p>
+    </div>
+
+    <div class="grid grid-cols-1 lg:grid-cols-5 gap-6">
+        <!-- Form Panel -->
+        <div class="lg:col-span-2">
+            <div class="card sticky top-24">
+                <h2 class="text-lg font-semibold text-white mb-5">🔍 Search Criteria</h2>
+                <form id="doctors-form" onsubmit="findDoctors(event)" class="space-y-4">
+                    <div>
+                        <label class="form-label">Medical Specialty</label>
+                        <select name="specialty" id="specialty-select" class="form-select" onchange="updateSpecialtyIcon(this)">
+                            <optgroup label="Primary Care">
+                                <option value="General Physician">General Physician / GP</option>
+                                <option value="Family Medicine">Family Medicine</option>
+                                <option value="Internal Medicine">Internal Medicine</option>
+                            </optgroup>
+                            <optgroup label="Specialists">
+                                <option value="Cardiologist">Cardiologist (Heart)</option>
+                                <option value="Neurologist">Neurologist (Brain & Nerves)</option>
+                                <option value="Orthopedic Surgeon">Orthopedic Surgeon (Bones)</option>
+                                <option value="Dermatologist">Dermatologist (Skin)</option>
+                                <option value="Endocrinologist">Endocrinologist (Diabetes/Thyroid)</option>
+                                <option value="Gastroenterologist">Gastroenterologist (Digestive)</option>
+                                <option value="Pulmonologist">Pulmonologist (Lungs)</option>
+                                <option value="Nephrologist">Nephrologist (Kidneys)</option>
+                                <option value="Rheumatologist">Rheumatologist (Joints)</option>
+                                <option value="Oncologist">Oncologist (Cancer)</option>
+                                <option value="Urologist">Urologist</option>
+                                <option value="Gynecologist">Gynecologist / OB-GYN</option>
+                                <option value="Psychiatrist">Psychiatrist (Mental Health)</option>
+                                <option value="Ophthalmologist">Ophthalmologist (Eyes)</option>
+                                <option value="ENT Specialist">ENT Specialist</option>
+                                <option value="Dentist">Dentist / Dental Surgeon</option>
+                                <option value="Pediatrician">Pediatrician (Children)</option>
+                                <option value="Physiotherapist">Physiotherapist</option>
+                                <option value="Dietitian">Registered Dietitian</option>
+                            </optgroup>
+                        </select>
+                    </div>
+
+                    <div>
+                        <label class="form-label">Your Location</label>
+                        <input type="text" name="location" class="form-input"
+                               placeholder="City, State, Country (e.g., Mumbai, India)">
+                    </div>
+
+                    <div>
+                        <label class="form-label">Medical Concern / Condition</label>
+                        <textarea name="condition" rows="2" class="form-textarea"
+                                  placeholder="Briefly describe your health concern..."></textarea>
+                    </div>
+
+                    <div>
+                        <label class="form-label">Insurance (optional)</label>
+                        <input type="text" name="insurance" class="form-input"
+                               placeholder="Insurance provider or plan name">
+                    </div>
+
+                    <div>
+                        <label class="form-label">Additional Preferences</label>
+                        <input type="text" name="preference" class="form-input"
+                               placeholder="Female doctor, evening hours, near public transport...">
+                    </div>
+
+                    <button type="submit" id="doctors-btn" class="btn-primary w-full py-3 justify-center">
+                        🔍 Find Doctors
+                    </button>
+                </form>
+            </div>
+
+            <!-- Common Specialties Quick-Select -->
+            <div class="card mt-4">
+                <h3 class="font-medium text-white mb-3 text-sm">🏃 Quick Specialty</h3>
+                <div class="flex flex-wrap gap-2">
+                    {% for s in [('❤️', 'Cardiologist'), ('🧠', 'Neurologist'), ('🦴', 'Orthopedic Surgeon'), ('🩺', 'General Physician'), ('🔬', 'Endocrinologist'), ('🦷', 'Dentist'), ('👁️', 'Ophthalmologist'), ('🧒', 'Pediatrician')] %}
+                    <button onclick="setSpecialty('{{ s[1] }}')"
+                            class="text-xs px-3 py-1.5 bg-gray-800 hover:bg-gray-700 border border-gray-700 hover:border-primary-700 text-gray-400 hover:text-primary-400 rounded-full transition-all">
+                        {{ s[0] }} {{ s[1].split(' ')[0] }}
+                    </button>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+
+        <!-- Results Panel -->
+        <div class="lg:col-span-3">
+            <div id="doctors-placeholder" class="card flex flex-col items-center justify-center py-24 text-center min-h-96">
+                <div class="text-6xl mb-4">🏥</div>
+                <h3 class="text-xl font-semibold text-gray-300 mb-2">Search for a Doctor</h3>
+                <p class="text-gray-500 max-w-xs">Select a specialty and your location to get AI-powered guidance on finding the right healthcare professional.</p>
+            </div>
+            <div id="doctors-loading" class="card hidden flex-col items-center justify-center py-24 text-center min-h-96">
+                <div class="spinner w-16 h-16 border-4 mb-6 mx-auto"></div>
+                <h3 class="text-lg font-semibold text-white mb-2">Searching for Doctors…</h3>
+                <p class="text-gray-500 text-sm">AI is finding the best guidance for your search</p>
+            </div>
+            <div id="doctors-result" class="card hidden">
+                <div class="flex items-center justify-between mb-5">
+                    <h2 class="text-lg font-semibold text-white">🏥 Doctor Recommendations</h2>
+                    <div class="flex gap-2">
+                        <button onclick="copyDoctorsResult()" class="btn-sm btn-outline">📋 Copy</button>
+                        <button onclick="resetDoctors()" class="btn-sm btn-outline-red">✕ New</button>
+                    </div>
+                </div>
+                <div id="doctors-content" class="markdown-output border-t border-gray-800 pt-5 max-h-[700px] overflow-y-auto"></div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script src="{{ url_for('static', filename='js/doctors.js') }}"></script>
+{% endblock %}

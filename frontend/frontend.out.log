@@ -1,0 +1,13 @@
+
+> healthsync-ai-frontend@0.1.0 dev
+> next dev
+
+  ▲ Next.js 14.2.5
+  - Local:        http://localhost:3000
+
+ ✓ Starting...
+ ✓ Ready in 10.1s
+ ○ Compiling /src/middleware ...
+ ✓ Compiled /src/middleware in 1647ms (73 modules)
+ ○ Compiling / ...
+ GET / 500 in 14918ms

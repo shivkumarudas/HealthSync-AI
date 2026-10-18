@@ -1,0 +1,197 @@
+{% extends "base.html" %}
+{% block title %}Admin Dashboard — HealthSync AI{% endblock %}
+
+{% block content %}
+<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
+
+    <!-- Header -->
+    <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-8">
+        <div>
+            <div class="section-badge mb-2"><span>🔐</span> Admin Panel</div>
+            <h1 class="page-title">Admin <span class="text-gradient">Dashboard</span></h1>
+            <p class="text-gray-400 mt-1">Manage users and monitor platform activity.</p>
+        </div>
+        <div class="flex gap-3">
+            <button onclick="refreshData()" class="btn-outline">🔄 Refresh</button>
+            <a href="{{ url_for('dashboard') }}" class="btn-sm btn-outline">← Back to Dashboard</a>
+        </div>
+    </div>
+
+    <!-- Stats Row -->
+    <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-8">
+        <div class="stat-card">
+            <div class="stat-icon bg-blue-900/40 text-3xl">👥</div>
+            <div>
+                <p class="text-gray-500 text-xs font-medium uppercase tracking-wide">Total Users</p>
+                <p class="text-3xl font-bold text-white mt-0.5">{{ users|length }}</p>
+                <p class="text-gray-600 text-xs mt-1">{{ users|selectattr('role', 'equalto', 'admin')|list|length }} admin(s)</p>
+            </div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-icon bg-green-900/40 text-3xl">🔬</div>
+            <div>
+                <p class="text-gray-500 text-xs font-medium uppercase tracking-wide">Total Analyses</p>
+                <p class="text-3xl font-bold text-white mt-0.5">{{ total_analyses }}</p>
+                <p class="text-gray-600 text-xs mt-1">Across all features</p>
+            </div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-icon bg-purple-900/40 text-3xl">📊</div>
+            <div>
+                <p class="text-gray-500 text-xs font-medium uppercase tracking-wide">Avg Analyses/User</p>
+                <p class="text-3xl font-bold text-white mt-0.5">
+                    {% if users|length > 0 %}{{ (total_analyses / users|length)|round(1) }}{% else %}0{% endif %}
+                </p>
+                <p class="text-gray-600 text-xs mt-1">Per registered user</p>
+            </div>
+        </div>
+    </div>
+
+    <div class="grid grid-cols-1 xl:grid-cols-3 gap-6">
+
+        <!-- Users Table -->
+        <div class="xl:col-span-2">
+            <div class="card">
+                <div class="flex items-center justify-between mb-5">
+                    <h2 class="text-lg font-semibold text-white">👥 All Users</h2>
+                    <input type="text" id="user-search" oninput="filterUsers(this.value)"
+                           class="form-input w-48 py-2 text-sm" placeholder="🔍 Search users...">
+                </div>
+
+                <div class="overflow-x-auto">
+                    <table class="w-full text-sm" id="users-table">
+                        <thead>
+                            <tr class="border-b border-gray-800">
+                                <th class="text-left py-3 px-3 text-gray-500 font-medium">User</th>
+                                <th class="text-left py-3 px-3 text-gray-500 font-medium">Email</th>
+                                <th class="text-left py-3 px-3 text-gray-500 font-medium">Role</th>
+                                <th class="text-left py-3 px-3 text-gray-500 font-medium">Joined</th>
+                                <th class="text-center py-3 px-3 text-gray-500 font-medium">Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="users-tbody">
+                            {% for u in users %}
+                            <tr class="border-b border-gray-800/50 hover:bg-gray-800/30 transition-colors user-row"
+                                data-username="{{ u.username }}" data-email="{{ u.email }}">
+                                <td class="py-3 px-3">
+                                    <div class="flex items-center gap-2">
+                                        <div class="w-8 h-8 rounded-full flex items-center justify-center text-sm font-bold
+                                                    {{ 'bg-yellow-900 text-yellow-400' if u.role == 'admin' else 'bg-primary-900 text-primary-400' }}">
+                                            {{ u.username[0].upper() }}
+                                        </div>
+                                        <span class="font-medium text-white">{{ u.username }}</span>
+                                    </div>
+                                </td>
+                                <td class="py-3 px-3 text-gray-400">{{ u.email }}</td>
+                                <td class="py-3 px-3">
+                                    <span class="badge {{ 'badge-yellow' if u.role == 'admin' else 'badge-green' }}">
+                                        {{ u.role }}
+                                    </span>
+                                </td>
+                                <td class="py-3 px-3 text-gray-500 text-xs">
+                                    {{ u.created_at.strftime('%d %b %Y') }}
+                                </td>
+                                <td class="py-3 px-3 text-center">
+                                    {% if u.role != 'admin' %}
+                                    <button onclick="deleteUser({{ u.id }}, '{{ u.username }}')"
+                                            class="text-red-500 hover:text-red-400 text-xs px-2 py-1 rounded border border-red-800 hover:border-red-600 transition-colors">
+                                        🗑 Delete
+                                    </button>
+                                    {% else %}
+                                    <span class="text-gray-600 text-xs">Protected</span>
+                                    {% endif %}
+                                </td>
+                            </tr>
+                            {% else %}
+                            <tr>
+                                <td colspan="5" class="text-center py-10 text-gray-500">No users registered yet.</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- Recent Activity -->
+        <div>
+            <div class="card">
+                <h2 class="text-lg font-semibold text-white mb-4">📋 Recent Activity</h2>
+                {% if recent_analyses %}
+                <div class="space-y-2 max-h-96 overflow-y-auto pr-1">
+                    {% for item in recent_analyses %}
+                    <div class="flex items-start gap-3 p-3 bg-gray-800/50 rounded-lg">
+                        <span class="text-lg mt-0.5">
+                            {% if item.analysis_type == 'report' %}🔬
+                            {% elif item.analysis_type == 'diet' %}🥗
+                            {% elif item.analysis_type == 'exercise' %}💪
+                            {% elif item.analysis_type == 'chat' %}🤖
+                            {% elif item.analysis_type == 'doctors' %}🏥
+                            {% else %}📊{% endif %}
+                        </span>
+                        <div class="flex-1 min-w-0">
+                            <div class="flex items-center justify-between gap-2">
+                                <span class="text-white text-xs font-medium">{{ item.user.username }}</span>
+                                <span class="text-gray-600 text-xs">{{ item.created_at.strftime('%b %d %H:%M') }}</span>
+                            </div>
+                            <div class="flex items-center gap-1 mt-1">
+                                <span class="badge text-xs
+                                    {% if item.analysis_type == 'report' %}badge-blue
+                                    {% elif item.analysis_type == 'diet' %}badge-green
+                                    {% elif item.analysis_type == 'exercise' %}badge-yellow
+                                    {% elif item.analysis_type == 'chat' %}badge-purple
+                                    {% else %}badge-red{% endif %}">
+                                    {{ item.analysis_type }}
+                                </span>
+                                <span class="text-gray-500 text-xs truncate">{{ item.input_summary[:30] }}{% if item.input_summary|length > 30 %}...{% endif %}</span>
+                            </div>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+                {% else %}
+                <div class="text-center py-8 text-gray-500">No activity recorded yet.</div>
+                {% endif %}
+            </div>
+
+            <!-- Activity by Type -->
+            <div class="card mt-4">
+                <h3 class="font-medium text-white mb-4 text-sm">📊 Usage by Feature</h3>
+                {% set types = [('report', '🔬', 'Reports', 'badge-blue'), ('diet', '🥗', 'Diet Plans', 'badge-green'), ('exercise', '💪', 'Workouts', 'badge-yellow'), ('chat', '🤖', 'AI Chats', 'badge-purple'), ('doctors', '🏥', 'Doctor Searches', 'badge-red')] %}
+                {% for type_key, icon, label, badge in types %}
+                {% set count = recent_analyses|selectattr('analysis_type', 'equalto', type_key)|list|length %}
+                <div class="flex items-center justify-between mb-3">
+                    <div class="flex items-center gap-2">
+                        <span>{{ icon }}</span>
+                        <span class="text-gray-300 text-sm">{{ label }}</span>
+                    </div>
+                    <span class="badge {{ badge }} text-xs">{{ count }}</span>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Confirm Delete Modal -->
+<div id="delete-modal" class="fixed inset-0 z-50 hidden">
+    <div class="absolute inset-0 bg-black/70 backdrop-blur-sm" onclick="closeDeleteModal()"></div>
+    <div class="relative z-10 flex items-center justify-center min-h-screen p-4">
+        <div class="bg-gray-900 border border-red-900 rounded-2xl p-8 max-w-sm w-full text-center animate-fade-up">
+            <div class="text-5xl mb-4">⚠️</div>
+            <h3 class="text-xl font-bold text-white mb-2">Delete User?</h3>
+            <p class="text-gray-400 mb-6">Are you sure you want to delete <strong id="delete-username" class="text-white"></strong>? This action cannot be undone.</p>
+            <div class="flex gap-3">
+                <button onclick="closeDeleteModal()" class="flex-1 btn-outline py-2.5 justify-center">Cancel</button>
+                <button id="confirm-delete-btn" class="flex-1 py-2.5 bg-red-700 hover:bg-red-600 text-white font-semibold rounded-lg transition-colors">
+                    🗑 Delete
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script src="{{ url_for('static', filename='js/admin.js') }}"></script>
+{% endblock %}

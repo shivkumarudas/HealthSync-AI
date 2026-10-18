@@ -1,0 +1,334 @@
+/* HealthSync AI — Global Styles */
+
+/* ─── Scrollbar ─────────────────────────────── */
+::-webkit-scrollbar { width: 6px; height: 6px; }
+::-webkit-scrollbar-track { background: #111827; }
+::-webkit-scrollbar-thumb { background: #374151; border-radius: 3px; }
+::-webkit-scrollbar-thumb:hover { background: #4ade80; }
+
+/* ─── Animations ────────────────────────────── */
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(-8px); }
+    to   { opacity: 1; transform: translateY(0); }
+}
+@keyframes fadeInUp {
+    from { opacity: 0; transform: translateY(20px); }
+    to   { opacity: 1; transform: translateY(0); }
+}
+@keyframes pulse-ring {
+    0%   { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(74, 222, 128, 0.4); }
+    70%  { transform: scale(1);    box-shadow: 0 0 0 10px rgba(74, 222, 128, 0); }
+    100% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(74, 222, 128, 0); }
+}
+@keyframes shimmer {
+    0%   { background-position: -1000px 0; }
+    100% { background-position: 1000px 0; }
+}
+@keyframes spin-slow {
+    from { transform: rotate(0deg); }
+    to   { transform: rotate(360deg); }
+}
+@keyframes typing {
+    0%, 100% { opacity: 0.2; }
+    50%       { opacity: 1; }
+}
+
+.animate-fade-in    { animation: fadeIn 0.3s ease forwards; }
+.animate-fade-up    { animation: fadeInUp 0.4s ease forwards; }
+.animate-pulse-ring { animation: pulse-ring 2s infinite; }
+.animate-spin-slow  { animation: spin-slow 3s linear infinite; }
+
+/* ─── Navigation ────────────────────────────── */
+.nav-link {
+    @apply px-3 py-2 text-sm font-medium text-gray-300 rounded-lg
+           hover:bg-gray-800 hover:text-white transition-all duration-200;
+}
+.nav-link.active {
+    @apply bg-primary-900/50 text-primary-400 font-semibold;
+}
+.mobile-nav-link {
+    @apply block px-3 py-2 text-sm font-medium text-gray-300 rounded-lg
+           hover:bg-gray-800 hover:text-white transition-colors;
+}
+
+/* ─── Buttons ───────────────────────────────── */
+.btn-primary {
+    @apply inline-flex items-center gap-2 px-4 py-2 bg-primary-600 hover:bg-primary-500
+           text-white font-semibold rounded-lg transition-all duration-200
+           shadow-lg hover:shadow-primary-500/25 active:scale-95;
+}
+.btn-outline {
+    @apply inline-flex items-center gap-2 px-4 py-2 border border-gray-600
+           hover:border-primary-500 text-gray-300 hover:text-primary-400
+           font-medium rounded-lg transition-all duration-200;
+}
+.btn-outline-red {
+    @apply inline-flex items-center gap-2 px-3 py-1.5 border border-red-800
+           hover:border-red-600 text-red-400 hover:text-red-300
+           font-medium rounded-lg transition-all duration-200 text-sm;
+}
+.btn-sm { @apply text-sm px-3 py-1.5; }
+
+/* ─── Cards ─────────────────────────────────── */
+.card {
+    @apply bg-gray-900 border border-gray-800 rounded-xl p-6
+           hover:border-gray-700 transition-colors duration-200;
+}
+.card-glow {
+    @apply bg-gray-900 border border-primary-800/40 rounded-xl p-6
+           shadow-lg shadow-primary-900/20;
+}
+
+/* ─── Form Elements ─────────────────────────── */
+.form-input {
+    @apply w-full bg-gray-800 border border-gray-700 rounded-lg px-4 py-3
+           text-white placeholder-gray-500 focus:outline-none focus:ring-2
+           focus:ring-primary-500 focus:border-transparent transition-all;
+}
+.form-label {
+    @apply block text-sm font-medium text-gray-300 mb-1.5;
+}
+.form-select {
+    @apply w-full bg-gray-800 border border-gray-700 rounded-lg px-4 py-3
+           text-white focus:outline-none focus:ring-2 focus:ring-primary-500
+           focus:border-transparent transition-all;
+}
+.form-textarea {
+    @apply w-full bg-gray-800 border border-gray-700 rounded-lg px-4 py-3
+           text-white placeholder-gray-500 focus:outline-none focus:ring-2
+           focus:ring-primary-500 focus:border-transparent transition-all resize-none;
+}
+
+/* ─── Flash Alerts ──────────────────────────── */
+.flash-alert { backdrop-filter: blur(8px); }
+.flash-success  { @apply bg-green-900/80 border border-green-700 text-green-100; }
+.flash-danger   { @apply bg-red-900/80 border border-red-700 text-red-100; }
+.flash-warning  { @apply bg-yellow-900/80 border border-yellow-700 text-yellow-100; }
+.flash-info     { @apply bg-blue-900/80 border border-blue-700 text-blue-100; }
+
+/* ─── Feature Cards ─────────────────────────── */
+.feature-card {
+    @apply bg-gray-900/60 border border-gray-800 rounded-lg p-6
+           hover:border-primary-700/50 hover:bg-gray-900 transition-all duration-200 cursor-pointer;
+}
+
+/* ─── Stat Cards ────────────────────────────── */
+.stat-card {
+    @apply bg-gray-900 border border-gray-800 rounded-xl p-5 flex items-start gap-4;
+}
+.stat-icon {
+    @apply w-12 h-12 rounded-xl flex items-center justify-center text-2xl flex-shrink-0;
+}
+
+/* ─── Loading Spinner ───────────────────────── */
+.spinner {
+    @apply w-6 h-6 border-2 border-gray-600 border-t-primary-400 rounded-full;
+    animation: spin-slow 0.8s linear infinite;
+}
+
+/* ─── Markdown Result Output ────────────────── */
+.markdown-output {
+    @apply text-gray-200 leading-relaxed;
+}
+.markdown-output h1, .markdown-output h2 {
+    @apply text-primary-400 font-bold mt-6 mb-3 border-b border-gray-800 pb-2;
+}
+.markdown-output h3 { @apply text-white font-semibold mt-5 mb-2; }
+.markdown-output h4 { @apply text-gray-200 font-medium mt-4 mb-1; }
+.markdown-output p  { @apply mb-3 text-gray-300; }
+.markdown-output ul { @apply list-disc list-inside space-y-1 mb-3 text-gray-300 ml-2; }
+.markdown-output ol { @apply list-decimal list-inside space-y-1 mb-3 text-gray-300 ml-2; }
+.markdown-output li { @apply leading-relaxed; }
+.markdown-output strong { @apply text-white font-semibold; }
+.markdown-output em     { @apply text-gray-300 italic; }
+.markdown-output code   { @apply bg-gray-800 text-primary-300 px-1.5 py-0.5 rounded text-sm font-mono; }
+.markdown-output pre    { @apply bg-gray-800 p-4 rounded-lg overflow-x-auto mb-3; }
+.markdown-output table  { @apply w-full border-collapse text-sm mb-4; }
+.markdown-output th     { @apply bg-gray-800 text-primary-400 px-3 py-2 text-left font-semibold border border-gray-700; }
+.markdown-output td     { @apply px-3 py-2 border border-gray-700 text-gray-300; }
+.markdown-output tr:nth-child(even) td { @apply bg-gray-900/50; }
+.markdown-output blockquote { @apply border-l-4 border-primary-600 pl-4 italic text-gray-400 my-3; }
+
+/* ─── Badge ─────────────────────────────────── */
+.badge {
+    @apply inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium;
+}
+.badge-green  { @apply bg-green-900/60 text-green-400 border border-green-800; }
+.badge-blue   { @apply bg-blue-900/60 text-blue-400 border border-blue-800; }
+.badge-yellow { @apply bg-yellow-900/60 text-yellow-400 border border-yellow-800; }
+.badge-red    { @apply bg-red-900/60 text-red-400 border border-red-800; }
+.badge-purple { @apply bg-purple-900/60 text-purple-400 border border-purple-800; }
+
+/* ─── Upload Zone ───────────────────────────── */
+.upload-zone {
+    @apply border-2 border-dashed border-gray-700 rounded-xl p-10 text-center
+           hover:border-primary-600 hover:bg-gray-900/50 transition-all duration-300 cursor-pointer;
+}
+.upload-zone.dragover {
+    @apply border-primary-500 bg-primary-900/20;
+}
+
+/* ─── Chat Bubbles ──────────────────────────── */
+.chat-bubble-user {
+    @apply bg-primary-700/30 border border-primary-700/50 rounded-2xl rounded-tr-sm
+           px-4 py-3 max-w-[80%] ml-auto text-gray-100;
+}
+.chat-bubble-ai {
+    @apply bg-gray-800 border border-gray-700 rounded-2xl rounded-tl-sm
+           px-4 py-3 max-w-[85%] text-gray-200;
+}
+
+/* ─── Typing Indicator ──────────────────────── */
+.typing-dot {
+    @apply w-2 h-2 bg-primary-400 rounded-full;
+    animation: typing 1.2s ease-in-out infinite;
+}
+.typing-dot:nth-child(2) { animation-delay: 0.2s; }
+.typing-dot:nth-child(3) { animation-delay: 0.4s; }
+
+/* ─── Section Headers ───────────────────────── */
+.section-badge {
+    @apply inline-flex items-center gap-2 px-3 py-1 bg-primary-900/50 text-primary-400
+           text-xs font-semibold rounded-full border border-primary-800 mb-4;
+}
+.page-title {
+    @apply text-3xl md:text-4xl font-bold text-white;
+}
+.page-subtitle {
+    @apply text-gray-400 text-lg mt-2;
+}
+
+/* ─── Hero Gradient ─────────────────────────── */
+.hero-gradient {
+    background: radial-gradient(ellipse 80% 80% at 50% -20%, rgba(34, 197, 94, 0.08), transparent);
+}
+.text-gradient {
+    @apply bg-gradient-to-r from-primary-400 to-blue-400 bg-clip-text text-transparent;
+}
+
+/* ─── Landing Hero ──────────────────────────── */
+.home-hero {
+    position: relative;
+    isolation: isolate;
+    display: flex;
+    align-items: center;
+    min-height: clamp(560px, calc(100svh - 4rem), 760px);
+    overflow: hidden;
+    background: #13221d;
+}
+.home-hero-image,
+.home-hero-shade {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+}
+.home-hero-image {
+    z-index: -2;
+    object-fit: cover;
+    object-position: 62% center;
+}
+.home-hero-shade {
+    z-index: -1;
+    background: linear-gradient(90deg, rgba(8, 20, 16, 0.94) 0%, rgba(8, 20, 16, 0.78) 42%, rgba(8, 20, 16, 0.18) 100%),
+                linear-gradient(0deg, rgba(8, 20, 16, 0.35), transparent 45%);
+}
+.home-hero-copy { max-width: 700px; }
+.home-eyebrow {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin: 0 0 22px;
+    color: #d9e8de;
+    font-size: 0.8rem;
+    font-weight: 600;
+    text-transform: uppercase;
+}
+.home-eyebrow span {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: #c5f078;
+    box-shadow: 0 0 0 5px rgba(197, 240, 120, 0.16);
+}
+.home-title {
+    margin: 0;
+    color: #fff;
+    font-family: Georgia, 'Times New Roman', serif;
+    font-size: 3.5rem;
+    font-weight: 500;
+    line-height: 1.02;
+}
+.home-title span {
+    display: block;
+    max-width: 660px;
+    margin-top: 10px;
+    color: #d9efb5;
+    font-size: 0.72em;
+    line-height: 1.12;
+}
+.home-description {
+    max-width: 560px;
+    margin: 24px 0 30px;
+    color: #e0e8e3;
+    font-size: 1.1rem;
+    line-height: 1.65;
+}
+.home-cta,
+.home-secondary-cta {
+    display: inline-flex;
+    min-height: 48px;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+    padding: 0 22px;
+    border-radius: 8px;
+    font-size: 0.95rem;
+    font-weight: 700;
+    transition: background-color 160ms ease, color 160ms ease, border-color 160ms ease;
+}
+.home-cta { background: #c5f078; color: #18352a; }
+.home-cta:hover { background: #d5f79e; }
+.home-secondary-cta {
+    border: 1px solid rgba(255, 255, 255, 0.55);
+    color: #fff;
+}
+.home-secondary-cta:hover {
+    border-color: #fff;
+    background: rgba(255, 255, 255, 0.1);
+}
+.home-note {
+    margin: 22px 0 0;
+    color: rgba(232, 240, 235, 0.78);
+    font-size: 0.8rem;
+}
+
+@media (max-width: 640px) {
+    .home-hero { min-height: min(700px, calc(100svh - 4rem)); }
+    .home-hero-image { object-position: 68% center; }
+    .home-hero-shade {
+        background: linear-gradient(90deg, rgba(8, 20, 16, 0.9), rgba(8, 20, 16, 0.55)),
+                    linear-gradient(0deg, rgba(8, 20, 16, 0.55), transparent 60%);
+    }
+    .home-title { font-size: 3rem; }
+    .home-description { font-size: 1rem; }
+}
+
+@media (min-width: 768px) {
+    .home-title { font-size: 5.25rem; }
+}
+
+/* ─── Sidebar progress ──────────────────────── */
+.progress-bar {
+    @apply h-2 bg-gray-800 rounded-full overflow-hidden;
+}
+.progress-fill {
+    @apply h-full bg-gradient-to-r from-primary-600 to-primary-400 rounded-full transition-all duration-500;
+}
+
+/* ─── Shimmer loading ───────────────────────── */
+.shimmer {
+    background: linear-gradient(90deg, #1f2937 0%, #374151 50%, #1f2937 100%);
+    background-size: 1000px 100%;
+    animation: shimmer 1.5s infinite;
+}

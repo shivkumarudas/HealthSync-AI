@@ -1,0 +1,110 @@
+{% extends "base.html" %}
+{% block title %}Medical Report Analyzer — HealthSync AI{% endblock %}
+
+{% block content %}
+<div class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
+
+    <!-- Header -->
+    <div class="text-center mb-10 animate-fade-up">
+        <div class="section-badge"><span>🔬</span> AI-Powered</div>
+        <h1 class="page-title mt-2">Medical Report <span class="text-gradient">Analyzer</span></h1>
+        <p class="page-subtitle">Upload your medical reports and get instant, structured insights powered by Google Gemini.</p>
+    </div>
+
+    <div class="grid grid-cols-1 lg:grid-cols-5 gap-6">
+
+        <!-- Upload Section (left) -->
+        <div class="lg:col-span-2 space-y-4">
+            <div class="card">
+                <h2 class="text-lg font-semibold text-white mb-4">📤 Upload Report</h2>
+
+                <!-- Upload Zone -->
+                <div id="upload-zone" class="upload-zone" onclick="document.getElementById('file-input').click()"
+                     ondragover="handleDragOver(event)" ondragleave="handleDragLeave(event)" ondrop="handleDrop(event)">
+                    <div id="upload-placeholder">
+                        <div class="text-5xl mb-3">📄</div>
+                        <p class="text-white font-medium mb-1">Drop your report here</p>
+                        <p class="text-gray-500 text-sm">or click to browse</p>
+                        <p class="text-gray-600 text-xs mt-3">PDF, PNG, JPG, JPEG, WEBP · Max 16MB</p>
+                    </div>
+                    <div id="file-preview" class="hidden">
+                        <div class="text-4xl mb-3" id="file-icon">📄</div>
+                        <p class="text-primary-400 font-medium" id="file-name">file.pdf</p>
+                        <p class="text-gray-500 text-sm" id="file-size">0 KB</p>
+                        <button onclick="clearFile(event)" class="mt-2 text-red-400 hover:text-red-300 text-xs">✕ Remove</button>
+                    </div>
+                </div>
+                <input type="file" id="file-input" class="hidden"
+                       accept=".pdf,.png,.jpg,.jpeg,.webp" onchange="handleFileSelect(this)">
+
+                <!-- Image Preview -->
+                <div id="img-preview-wrapper" class="hidden mt-3">
+                    <img id="img-preview" src="" alt="Preview" class="w-full rounded-lg border border-gray-700 max-h-48 object-cover">
+                </div>
+
+                <button id="analyze-btn" onclick="analyzeReport()"
+                        class="btn-primary w-full py-3 justify-center mt-4 disabled:opacity-50 disabled:cursor-not-allowed" disabled>
+                    🔍 Analyze Report
+                </button>
+            </div>
+
+            <!-- Supported formats info -->
+            <div class="card text-sm space-y-2">
+                <h3 class="font-medium text-white mb-3">📋 Supported Reports</h3>
+                {% for doc in ['Blood Test Reports', 'Urine Analysis', 'Lipid Panel', 'Thyroid Function', 'Liver Function', 'X-Ray Descriptions', 'Prescription Images', 'Medical Summaries'] %}
+                <div class="flex items-center gap-2 text-gray-400">
+                    <span class="text-primary-500">✓</span> {{ doc }}
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+
+        <!-- Results Section (right) -->
+        <div class="lg:col-span-3">
+            <div id="result-placeholder" class="card flex flex-col items-center justify-center py-20 text-center">
+                <div class="text-6xl mb-4 animate-pulse-ring">🔬</div>
+                <h3 class="text-xl font-semibold text-gray-300 mb-2">Ready to Analyze</h3>
+                <p class="text-gray-500 max-w-xs">Upload a medical report on the left and click "Analyze Report" to see AI-powered insights here.</p>
+            </div>
+
+            <!-- Loading State -->
+            <div id="result-loading" class="card hidden">
+                <div class="flex flex-col items-center justify-center py-20">
+                    <div class="relative w-20 h-20 mb-6">
+                        <div class="spinner w-20 h-20 border-4"></div>
+                        <span class="absolute inset-0 flex items-center justify-center text-2xl">🔬</span>
+                    </div>
+                    <h3 class="text-lg font-semibold text-white mb-2">Analyzing your report…</h3>
+                    <p class="text-gray-500 text-sm">Gemini AI is reading and interpreting your report</p>
+                    <div class="mt-4 w-full max-w-xs">
+                        <div id="progress-bar-container" class="progress-bar">
+                            <div id="progress-bar-fill" class="progress-fill" style="width: 0%"></div>
+                        </div>
+                        <p id="progress-text" class="text-xs text-gray-500 mt-2 text-center">Uploading…</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Result Display -->
+            <div id="result-display" class="card hidden">
+                <div class="flex items-center justify-between mb-5">
+                    <div>
+                        <h2 class="text-lg font-semibold text-white">📋 Analysis Results</h2>
+                        <p id="result-filename" class="text-gray-500 text-sm mt-0.5"></p>
+                    </div>
+                    <div class="flex gap-2">
+                        <button onclick="copyResult()" class="btn-sm btn-outline">📋 Copy</button>
+                        <button onclick="downloadResult()" class="btn-sm btn-outline">💾 Save</button>
+                        <button onclick="resetAnalyzer()" class="btn-sm btn-outline-red">✕ New</button>
+                    </div>
+                </div>
+                <div id="result-content" class="markdown-output border-t border-gray-800 pt-5 max-h-[600px] overflow-y-auto"></div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script src="{{ url_for('static', filename='js/report.js') }}"></script>
+{% endblock %}

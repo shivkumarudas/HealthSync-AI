@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}HealthSync AI{% endblock %}</title>
+
+    <!-- Tailwind CSS via CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Marked.js for markdown rendering -->
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+    <!-- Lucide Icons -->
+    <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.js"></script>
+
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.compiled.css') }}">
+
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: {
+                            50:  '#f0fdf4',
+                            100: '#dcfce7',
+                            200: '#bbf7d0',
+                            300: '#86efac',
+                            400: '#4ade80',
+                            500: '#22c55e',
+                            600: '#16a34a',
+                            700: '#15803d',
+                            800: '#166534',
+                            900: '#14532d',
+                        },
+                        accent: {
+                            400: '#60a5fa',
+                            500: '#3b82f6',
+                            600: '#2563eb',
+                        }
+                    },
+                    fontFamily: {
+                        sans: ['Inter', 'system-ui', 'sans-serif'],
+                    }
+                }
+            }
+        }
+    </script>
+
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+
+    {% block head %}{% endblock %}
+</head>
+<body class="bg-gray-950 text-gray-100 font-sans min-h-screen flex flex-col">
+
+    <!-- Navigation -->
+    <nav class="bg-gray-900 border-b border-gray-800 sticky top-0 z-50">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex items-center justify-between h-16">
+                <!-- Logo -->
+                <a href="{{ url_for('index') }}" class="flex items-center gap-2 text-xl font-bold text-primary-400 hover:text-primary-300 transition-colors">
+                    <span class="text-2xl">🩺</span>
+                    <span>HealthSync <span class="text-white">AI</span></span>
+                </a>
+
+                <!-- Desktop Nav -->
+                <div class="hidden md:flex items-center gap-1">
+                    {% if session.get('user_id') %}
+                        <a href="{{ url_for('dashboard') }}" class="nav-link {% if request.endpoint == 'dashboard' %}active{% endif %}">Dashboard</a>
+                        <a href="{{ url_for('report_analyzer') }}" class="nav-link {% if request.endpoint == 'report_analyzer' %}active{% endif %}">Reports</a>
+                        <a href="{{ url_for('diet_planner') }}" class="nav-link {% if request.endpoint == 'diet_planner' %}active{% endif %}">Diet</a>
+                        <a href="{{ url_for('exercise_planner') }}" class="nav-link {% if request.endpoint == 'exercise_planner' %}active{% endif %}">Exercise</a>
+                        <a href="{{ url_for('chatbot') }}" class="nav-link {% if request.endpoint == 'chatbot' %}active{% endif %}">AI Chat</a>
+                        <a href="{{ url_for('doctors') }}" class="nav-link {% if request.endpoint == 'doctors' %}active{% endif %}">Doctors</a>
+                        {% if session.get('role') == 'admin' %}
+                            <a href="{{ url_for('admin') }}" class="nav-link text-yellow-400 {% if request.endpoint == 'admin' %}active{% endif %}">Admin</a>
+                        {% endif %}
+                        <div class="ml-3 flex items-center gap-3">
+                            <span class="text-sm text-gray-400">Hi, <span class="text-primary-400 font-medium">{{ session.get('username', '') }}</span></span>
+                            <a href="{{ url_for('logout') }}" class="btn-sm btn-outline-red">Logout</a>
+                        </div>
+                    {% else %}
+                        <a href="{{ url_for('login') }}" class="btn-sm btn-outline">Login</a>
+                        <a href="{{ url_for('register') }}" class="btn-sm btn-primary">Sign Up</a>
+                    {% endif %}
+                </div>
+
+                <!-- Mobile Menu Button -->
+                <button id="mobile-menu-btn" class="md:hidden p-2 rounded-lg text-gray-400 hover:bg-gray-800" onclick="toggleMobileMenu()">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/>
+                    </svg>
+                </button>
+            </div>
+        </div>
+
+        <!-- Mobile Nav -->
+        <div id="mobile-menu" class="md:hidden hidden bg-gray-900 border-t border-gray-800 px-4 py-3 space-y-1">
+            {% if session.get('user_id') %}
+                <a href="{{ url_for('dashboard') }}" class="mobile-nav-link">Dashboard</a>
+                <a href="{{ url_for('report_analyzer') }}" class="mobile-nav-link">Report Analyzer</a>
+                <a href="{{ url_for('diet_planner') }}" class="mobile-nav-link">Diet Planner</a>
+                <a href="{{ url_for('exercise_planner') }}" class="mobile-nav-link">Exercise Planner</a>
+                <a href="{{ url_for('chatbot') }}" class="mobile-nav-link">AI Health Chat</a>
+                <a href="{{ url_for('doctors') }}" class="mobile-nav-link">Find Doctors</a>
+                {% if session.get('role') == 'admin' %}
+                    <a href="{{ url_for('admin') }}" class="mobile-nav-link text-yellow-400">Admin Dashboard</a>
+                {% endif %}
+                <div class="pt-2 border-t border-gray-700 flex items-center justify-between">
+                    <span class="text-sm text-gray-400">{{ session.get('username', '') }}</span>
+                    <a href="{{ url_for('logout') }}" class="text-red-400 text-sm hover:text-red-300">Logout</a>
+                </div>
+            {% else %}
+                <a href="{{ url_for('login') }}" class="mobile-nav-link">Login</a>
+                <a href="{{ url_for('register') }}" class="mobile-nav-link">Sign Up</a>
+            {% endif %}
+        </div>
+    </nav>
+
+    <!-- Flash Messages -->
+    {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+            <div class="fixed top-20 right-4 z-50 space-y-2 max-w-sm" id="flash-container">
+                {% for category, message in messages %}
+                    <div class="flash-alert flash-{{ category }} flex items-start gap-3 p-4 rounded-lg shadow-lg animate-fade-in">
+                        <span class="flash-icon">
+                            {% if category == 'success' %}✅{% elif category == 'danger' %}❌{% elif category == 'warning' %}⚠️{% else %}ℹ️{% endif %}
+                        </span>
+                        <p class="text-sm flex-1">{{ message }}</p>
+                        <button onclick="this.parentElement.remove()" class="text-gray-400 hover:text-white ml-2">✕</button>
+                    </div>
+                {% endfor %}
+            </div>
+            <script>
+                setTimeout(() => {
+                    const fc = document.getElementById('flash-container');
+                    if (fc) fc.style.opacity = '0', fc.style.transition = 'opacity 0.5s', setTimeout(() => fc.remove(), 500);
+                }, 5000);
+            </script>
+        {% endif %}
+    {% endwith %}
+
+    <!-- Main Content -->
+    <main class="flex-1">
+        {% block content %}{% endblock %}
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-gray-900 border-t border-gray-800 py-8 mt-auto">
+        <div class="max-w-7xl mx-auto px-4 text-center">
+            <div class="flex items-center justify-center gap-2 mb-3">
+                <span class="text-xl">🩺</span>
+                <span class="text-lg font-semibold text-primary-400">HealthSync AI</span>
+            </div>
+            <p class="text-gray-500 text-sm">Powered by Google Gemini · Built with Flask & Next.js</p>
+            <p class="text-gray-600 text-xs mt-2">⚕️ For informational purposes only. Always consult a healthcare professional.</p>
+        </div>
+    </footer>
+
+    <script src="{{ url_for('static', filename='js/main.js') }}"></script>
+    {% block scripts %}{% endblock %}
+</body>
+</html>

@@ -1,0 +1,97 @@
+{% extends "base.html" %}
+{% block title %}AI Health Assistant — HealthSync AI{% endblock %}
+
+{% block content %}
+<div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-10 h-full">
+    <div class="text-center mb-8 animate-fade-up">
+        <div class="section-badge"><span>🤖</span> AI Powered</div>
+        <h1 class="page-title mt-2">AI Health <span class="text-gradient">Assistant</span></h1>
+        <p class="page-subtitle">Ask anything about your health — symptoms, medications, diet, lifestyle, and more.</p>
+    </div>
+
+    <!-- Chat Container -->
+    <div class="card-glow flex flex-col" style="height: 68vh; min-height: 500px;">
+        <!-- Chat Header -->
+        <div class="flex items-center justify-between p-4 border-b border-gray-800">
+            <div class="flex items-center gap-3">
+                <div class="w-10 h-10 rounded-full bg-primary-900 border-2 border-primary-600 flex items-center justify-center text-lg animate-pulse-ring">🩺</div>
+                <div>
+                    <p class="font-semibold text-white">HealthSync AI</p>
+                    <p class="text-xs text-primary-400 flex items-center gap-1">
+                        <span class="w-1.5 h-1.5 bg-primary-400 rounded-full inline-block"></span>
+                        Online · Powered by Gemini
+                    </p>
+                </div>
+            </div>
+            <button onclick="clearChat()" class="btn-sm btn-outline text-xs">🗑 Clear</button>
+        </div>
+
+        <!-- Messages Area -->
+        <div id="chat-messages" class="flex-1 overflow-y-auto p-4 space-y-4 scroll-smooth">
+            <!-- Welcome Message -->
+            <div class="flex items-start gap-3">
+                <div class="w-8 h-8 rounded-full bg-primary-900 border border-primary-700 flex items-center justify-center text-sm flex-shrink-0">🩺</div>
+                <div class="chat-bubble-ai">
+                    <p class="font-medium text-primary-400 text-sm mb-1">HealthSync AI</p>
+                    <div class="markdown-output text-sm">
+                        <p>Hello! I'm your AI Health Assistant, powered by Google Gemini. 👋</p>
+                        <p>I can help you with:</p>
+                        <ul>
+                            <li>Understanding symptoms and conditions</li>
+                            <li>General nutrition and diet advice</li>
+                            <li>Exercise and fitness guidance</li>
+                            <li>Medication information (general)</li>
+                            <li>Healthy lifestyle tips</li>
+                        </ul>
+                        <p><strong>Note:</strong> I provide general health information only. Always consult a qualified healthcare professional for medical decisions. How can I help you today?</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Typing Indicator (hidden by default) -->
+        <div id="typing-indicator" class="hidden px-4 pb-2">
+            <div class="flex items-start gap-3">
+                <div class="w-8 h-8 rounded-full bg-primary-900 border border-primary-700 flex items-center justify-center text-sm flex-shrink-0">🩺</div>
+                <div class="chat-bubble-ai">
+                    <div class="flex gap-1 py-1">
+                        <span class="typing-dot"></span>
+                        <span class="typing-dot"></span>
+                        <span class="typing-dot"></span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Input Area -->
+        <div class="border-t border-gray-800 p-4">
+            <!-- Quick Questions -->
+            <div class="flex gap-2 flex-wrap mb-3" id="quick-questions">
+                {% for q in ["What foods are good for my heart?", "How do I manage stress?", "What's a healthy BMI?", "Tips for better sleep"] %}
+                <button onclick="sendQuickMessage('{{ q }}')"
+                        class="text-xs px-3 py-1.5 bg-gray-800 hover:bg-gray-700 border border-gray-700 hover:border-primary-700 text-gray-400 hover:text-primary-400 rounded-full transition-all">
+                    {{ q }}
+                </button>
+                {% endfor %}
+            </div>
+
+            <div class="flex gap-3">
+                <textarea id="chat-input" rows="1"
+                          class="form-textarea flex-1 resize-none min-h-[44px] max-h-32"
+                          placeholder="Ask me anything about your health…"
+                          onkeydown="handleChatKeydown(event)"
+                          oninput="autoResize(this)"></textarea>
+                <button id="send-btn" onclick="sendMessage()"
+                        class="btn-primary px-4 self-end flex-shrink-0 h-11 justify-center">
+                    <span id="send-icon">➤</span>
+                </button>
+            </div>
+            <p class="text-xs text-gray-600 mt-2 text-center">⚕️ For informational purposes only · Not a substitute for medical advice</p>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script src="{{ url_for('static', filename='js/chatbot.js') }}"></script>
+{% endblock %}

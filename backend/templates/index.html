@@ -1,0 +1,138 @@
+{% extends "base.html" %}
+{% block title %}HealthSync AI — Your Intelligent Health Companion{% endblock %}
+
+{% block content %}
+<!-- Hero Section -->
+<section class="home-hero">
+    <img
+        class="home-hero-image"
+        src="https://images.unsplash.com/photo-1579684385127-1ef15d508118?auto=format&fit=crop&w=2400&q=85"
+        alt=""
+        fetchpriority="high">
+    <div class="home-hero-shade" aria-hidden="true"></div>
+    <div class="max-w-7xl mx-auto w-full px-5 sm:px-8 lg:px-12 py-16 sm:py-20">
+        <div class="home-hero-copy animate-fade-in">
+            <p class="home-eyebrow"><span></span> A more connected view of your health</p>
+            <h1 class="home-title">HealthSync AI<span>for a clearer view of your health.</span></h1>
+            <p class="home-description">
+                Make sense of medical reports, build healthier routines, and find care with practical tools in one place.
+            </p>
+            <div class="flex flex-wrap gap-3 sm:gap-4">
+                {% if session.get('user_id') %}
+                    <a href="{{ url_for('dashboard') }}" class="home-cta">
+                        Go to Dashboard <span aria-hidden="true">→</span>
+                    </a>
+                {% else %}
+                    <a href="{{ url_for('register') }}" class="home-cta">
+                        Get started <span aria-hidden="true">→</span>
+                    </a>
+                    <a href="{{ url_for('login') }}" class="home-secondary-cta">Sign in</a>
+                {% endif %}
+            </div>
+            <p class="home-note">Educational support, always alongside professional care.</p>
+        </div>
+    </div>
+</section>
+
+<!-- Features Grid -->
+<section class="py-20 bg-gray-950">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="text-center mb-14">
+            <div class="section-badge mb-4"><span>✦</span> Your health workspace</div>
+            <h2 class="text-4xl font-bold text-white">Tools for your <span class="text-gradient">next step</span></h2>
+            <p class="text-gray-400 mt-3 max-w-xl mx-auto">Understand a report, plan a routine, or find a clinician when you need one.</p>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            <!-- Feature 1 -->
+            <a href="{% if session.get('user_id') %}{{ url_for('report_analyzer') }}{% else %}{{ url_for('register') }}{% endif %}" class="feature-card group">
+                <div class="w-14 h-14 rounded-2xl bg-blue-900/40 flex items-center justify-center text-3xl mb-5 group-hover:scale-110 transition-transform">🔬</div>
+                <h3 class="text-xl font-bold text-white mb-2">Medical Report Analyzer</h3>
+                <p class="text-gray-400 leading-relaxed">Upload lab reports, X-rays, or any medical document and get instant AI-powered insights in plain language.</p>
+                <div class="mt-4 text-primary-400 text-sm font-medium group-hover:translate-x-1 transition-transform">Analyze Reports →</div>
+            </a>
+
+            <!-- Feature 2 -->
+            <a href="{% if session.get('user_id') %}{{ url_for('diet_planner') }}{% else %}{{ url_for('register') }}{% endif %}" class="feature-card group">
+                <div class="w-14 h-14 rounded-2xl bg-green-900/40 flex items-center justify-center text-3xl mb-5 group-hover:scale-110 transition-transform">🥗</div>
+                <h3 class="text-xl font-bold text-white mb-2">AI Diet Planner</h3>
+                <p class="text-gray-400 leading-relaxed">Get personalized meal plans tailored to your health conditions, dietary preferences, and fitness goals.</p>
+                <div class="mt-4 text-primary-400 text-sm font-medium group-hover:translate-x-1 transition-transform">Plan My Diet →</div>
+            </a>
+
+            <!-- Feature 3 -->
+            <a href="{% if session.get('user_id') %}{{ url_for('exercise_planner') }}{% else %}{{ url_for('register') }}{% endif %}" class="feature-card group">
+                <div class="w-14 h-14 rounded-2xl bg-orange-900/40 flex items-center justify-center text-3xl mb-5 group-hover:scale-110 transition-transform">💪</div>
+                <h3 class="text-xl font-bold text-white mb-2">Exercise Planner</h3>
+                <p class="text-gray-400 leading-relaxed">Receive customized workout routines based on your fitness level, equipment availability, and health goals.</p>
+                <div class="mt-4 text-primary-400 text-sm font-medium group-hover:translate-x-1 transition-transform">Build My Plan →</div>
+            </a>
+
+            <!-- Feature 4 -->
+            <a href="{% if session.get('user_id') %}{{ url_for('chatbot') }}{% else %}{{ url_for('register') }}{% endif %}" class="feature-card group">
+                <div class="w-14 h-14 rounded-2xl bg-purple-900/40 flex items-center justify-center text-3xl mb-5 group-hover:scale-110 transition-transform">🤖</div>
+                <h3 class="text-xl font-bold text-white mb-2">AI Health Assistant</h3>
+                <p class="text-gray-400 leading-relaxed">Chat with our AI assistant 24/7 about symptoms, medications, health tips, and general wellness queries.</p>
+                <div class="mt-4 text-primary-400 text-sm font-medium group-hover:translate-x-1 transition-transform">Start Chatting →</div>
+            </a>
+
+            <!-- Feature 5 -->
+            <a href="{% if session.get('user_id') %}{{ url_for('doctors') }}{% else %}{{ url_for('register') }}{% endif %}" class="feature-card group">
+                <div class="w-14 h-14 rounded-2xl bg-red-900/40 flex items-center justify-center text-3xl mb-5 group-hover:scale-110 transition-transform">🏥</div>
+                <h3 class="text-xl font-bold text-white mb-2">Doctor Finder</h3>
+                <p class="text-gray-400 leading-relaxed">Find recommended specialists and clinics near you based on your medical needs and preferences.</p>
+                <div class="mt-4 text-primary-400 text-sm font-medium group-hover:translate-x-1 transition-transform">Find Doctors →</div>
+            </a>
+
+            <!-- Feature 6 -->
+            <a href="{% if session.get('user_id') %}{{ url_for('dashboard') }}{% else %}{{ url_for('register') }}{% endif %}" class="feature-card group">
+                <div class="w-14 h-14 rounded-2xl bg-teal-900/40 flex items-center justify-center text-3xl mb-5 group-hover:scale-110 transition-transform">📊</div>
+                <h3 class="text-xl font-bold text-white mb-2">Personal Dashboard</h3>
+                <p class="text-gray-400 leading-relaxed">Track your BMI, view analysis history, manage your health profile, and monitor your wellness journey.</p>
+                <div class="mt-4 text-primary-400 text-sm font-medium group-hover:translate-x-1 transition-transform">View Dashboard →</div>
+            </a>
+        </div>
+    </div>
+</section>
+
+<!-- How It Works -->
+<section class="py-20 bg-gray-900/50 border-y border-gray-800">
+    <div class="max-w-5xl mx-auto px-4 text-center">
+        <div class="section-badge mb-4"><span>⚡</span> How It Works</div>
+        <h2 class="text-4xl font-bold text-white mb-14">Get started in <span class="text-gradient">3 simple steps</span></h2>
+
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+            <div class="relative">
+                <div class="w-16 h-16 rounded-full bg-primary-900/60 border-2 border-primary-700 flex items-center justify-center text-2xl font-bold text-primary-400 mx-auto mb-4">1</div>
+                <h3 class="text-lg font-semibold text-white mb-2">Create Your Profile</h3>
+                <p class="text-gray-400 text-sm">Sign up and fill in your health details — age, weight, conditions, and goals.</p>
+                <div class="hidden md:block absolute top-8 left-full w-full h-px bg-gradient-to-r from-primary-700 to-transparent -translate-x-1/2"></div>
+            </div>
+            <div class="relative">
+                <div class="w-16 h-16 rounded-full bg-primary-900/60 border-2 border-primary-700 flex items-center justify-center text-2xl font-bold text-primary-400 mx-auto mb-4">2</div>
+                <h3 class="text-lg font-semibold text-white mb-2">Use AI Features</h3>
+                <p class="text-gray-400 text-sm">Upload reports, generate plans, or chat with the AI assistant.</p>
+                <div class="hidden md:block absolute top-8 left-full w-full h-px bg-gradient-to-r from-primary-700 to-transparent -translate-x-1/2"></div>
+            </div>
+            <div>
+                <div class="w-16 h-16 rounded-full bg-primary-900/60 border-2 border-primary-700 flex items-center justify-center text-2xl font-bold text-primary-400 mx-auto mb-4">3</div>
+                <h3 class="text-lg font-semibold text-white mb-2">Track Your Progress</h3>
+                <p class="text-gray-400 text-sm">Monitor your health journey through the dashboard and history.</p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- CTA -->
+<section class="py-20">
+    <div class="max-w-3xl mx-auto px-4 text-center">
+        <h2 class="text-4xl font-bold text-white mb-4">Ready to take control of your health?</h2>
+        <p class="text-gray-400 text-lg mb-8">Create a profile to start exploring report insights, personal plans, and care search.</p>
+        {% if not session.get('user_id') %}
+            <a href="{{ url_for('register') }}" class="btn-primary px-10 py-4 text-lg">Create Free Account →</a>
+        {% else %}
+            <a href="{{ url_for('dashboard') }}" class="btn-primary px-10 py-4 text-lg">Go to Dashboard →</a>
+        {% endif %}
+    </div>
+</section>
+{% endblock %}

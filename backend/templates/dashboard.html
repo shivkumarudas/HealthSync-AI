@@ -1,0 +1,301 @@
+{% extends "base.html" %}
+{% block title %}Dashboard — HealthSync AI{% endblock %}
+
+{% block content %}
+<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
+
+    <!-- Header -->
+    <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-8">
+        <div>
+            <h1 class="page-title">Welcome back, <span class="text-gradient">{{ user.username }}</span> 👋</h1>
+            <p class="page-subtitle">Here's your health overview and recent activity.</p>
+        </div>
+        <button onclick="openProfileModal()" class="btn-primary">
+            ✏️ Edit Profile
+        </button>
+    </div>
+
+    <!-- Stats Row -->
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
+        <!-- BMI Card -->
+        <div class="stat-card">
+            <div class="stat-icon bg-blue-900/40 text-3xl">⚖️</div>
+            <div>
+                <p class="text-gray-500 text-xs font-medium uppercase tracking-wide">BMI</p>
+                {% if bmi %}
+                    <p class="text-2xl font-bold text-white mt-0.5">{{ bmi }}</p>
+                    <span class="badge {% if bmi_cat == 'Normal weight' %}badge-green{% elif bmi_cat == 'Overweight' %}badge-yellow{% elif bmi_cat == 'Obese' %}badge-red{% else %}badge-blue{% endif %} mt-1">
+                        {{ bmi_cat }}
+                    </span>
+                {% else %}
+                    <p class="text-gray-400 text-sm mt-1">Set your profile</p>
+                {% endif %}
+            </div>
+        </div>
+
+        <!-- Weight Card -->
+        <div class="stat-card">
+            <div class="stat-icon bg-green-900/40 text-3xl">🏃</div>
+            <div>
+                <p class="text-gray-500 text-xs font-medium uppercase tracking-wide">Weight</p>
+                {% if profile and profile.weight %}
+                    <p class="text-2xl font-bold text-white mt-0.5">{{ profile.weight }} <span class="text-sm text-gray-400">kg</span></p>
+                    <p class="text-gray-500 text-xs mt-1">Height: {{ profile.height }} cm</p>
+                {% else %}
+                    <p class="text-gray-400 text-sm mt-1">Not set</p>
+                {% endif %}
+            </div>
+        </div>
+
+        <!-- Activity Level -->
+        <div class="stat-card">
+            <div class="stat-icon bg-orange-900/40 text-3xl">⚡</div>
+            <div>
+                <p class="text-gray-500 text-xs font-medium uppercase tracking-wide">Activity Level</p>
+                <p class="text-lg font-bold text-white mt-0.5 capitalize">
+                    {{ profile.activity_level if profile and profile.activity_level else 'Not set' }}
+                </p>
+                <p class="text-gray-500 text-xs mt-1">Goal: {{ profile.fitness_goal[:20] if profile and profile.fitness_goal else 'Not set' }}</p>
+            </div>
+        </div>
+
+        <!-- Analyses Done -->
+        <div class="stat-card">
+            <div class="stat-icon bg-purple-900/40 text-3xl">🔬</div>
+            <div>
+                <p class="text-gray-500 text-xs font-medium uppercase tracking-wide">Analyses Done</p>
+                <p class="text-2xl font-bold text-white mt-0.5">{{ activity_history|length }}</p>
+                <p class="text-gray-500 text-xs mt-1">Recent sessions</p>
+            </div>
+        </div>
+    </div>
+
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+
+        <!-- Quick Actions -->
+        <div class="lg:col-span-2">
+            <div class="card">
+                <h2 class="text-lg font-semibold text-white mb-5">🚀 Quick Actions</h2>
+                <div class="grid grid-cols-2 sm:grid-cols-3 gap-3">
+                    <a href="{{ url_for('report_analyzer') }}" class="flex flex-col items-center gap-2 p-4 bg-gray-800 rounded-xl hover:bg-gray-700 border border-gray-700 hover:border-blue-700 transition-all group text-center">
+                        <span class="text-3xl group-hover:scale-110 transition-transform">🔬</span>
+                        <span class="text-sm font-medium text-gray-300 group-hover:text-white">Analyze Report</span>
+                    </a>
+                    <a href="{{ url_for('diet_planner') }}" class="flex flex-col items-center gap-2 p-4 bg-gray-800 rounded-xl hover:bg-gray-700 border border-gray-700 hover:border-green-700 transition-all group text-center">
+                        <span class="text-3xl group-hover:scale-110 transition-transform">🥗</span>
+                        <span class="text-sm font-medium text-gray-300 group-hover:text-white">Diet Plan</span>
+                    </a>
+                    <a href="{{ url_for('exercise_planner') }}" class="flex flex-col items-center gap-2 p-4 bg-gray-800 rounded-xl hover:bg-gray-700 border border-gray-700 hover:border-orange-700 transition-all group text-center">
+                        <span class="text-3xl group-hover:scale-110 transition-transform">💪</span>
+                        <span class="text-sm font-medium text-gray-300 group-hover:text-white">Workout Plan</span>
+                    </a>
+                    <a href="{{ url_for('chatbot') }}" class="flex flex-col items-center gap-2 p-4 bg-gray-800 rounded-xl hover:bg-gray-700 border border-gray-700 hover:border-purple-700 transition-all group text-center">
+                        <span class="text-3xl group-hover:scale-110 transition-transform">🤖</span>
+                        <span class="text-sm font-medium text-gray-300 group-hover:text-white">AI Chat</span>
+                    </a>
+                    <a href="{{ url_for('doctors') }}" class="flex flex-col items-center gap-2 p-4 bg-gray-800 rounded-xl hover:bg-gray-700 border border-gray-700 hover:border-red-700 transition-all group text-center">
+                        <span class="text-3xl group-hover:scale-110 transition-transform">🏥</span>
+                        <span class="text-sm font-medium text-gray-300 group-hover:text-white">Find Doctors</span>
+                    </a>
+                    <button onclick="openProfileModal()" class="flex flex-col items-center gap-2 p-4 bg-gray-800 rounded-xl hover:bg-gray-700 border border-gray-700 hover:border-teal-700 transition-all group text-center">
+                        <span class="text-3xl group-hover:scale-110 transition-transform">👤</span>
+                        <span class="text-sm font-medium text-gray-300 group-hover:text-white">Edit Profile</span>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Health Profile Summary -->
+            {% if profile %}
+            <div class="card mt-6">
+                <h2 class="text-lg font-semibold text-white mb-4">👤 Health Profile</h2>
+                <div class="grid grid-cols-2 md:grid-cols-3 gap-4 text-sm">
+                    <div>
+                        <span class="text-gray-500 block">Age</span>
+                        <span class="text-white font-medium">{{ profile.age or '—' }} {{ 'years' if profile.age }}</span>
+                    </div>
+                    <div>
+                        <span class="text-gray-500 block">Gender</span>
+                        <span class="text-white font-medium capitalize">{{ profile.gender or '—' }}</span>
+                    </div>
+                    <div>
+                        <span class="text-gray-500 block">Blood Group</span>
+                        <span class="text-white font-medium">{{ profile.blood_group or '—' }}</span>
+                    </div>
+                    <div>
+                        <span class="text-gray-500 block">Diet Pref.</span>
+                        <span class="text-white font-medium capitalize">{{ profile.dietary_preference or '—' }}</span>
+                    </div>
+                    <div class="col-span-2">
+                        <span class="text-gray-500 block">Medical Conditions</span>
+                        <span class="text-white font-medium">{{ profile.medical_conditions or 'None reported' }}</span>
+                    </div>
+                </div>
+            </div>
+            {% endif %}
+        </div>
+
+        <!-- Recent Activity -->
+        <div class="card">
+            <h2 class="text-lg font-semibold text-white mb-4">📋 Recent Activity</h2>
+            {% if activity_history %}
+                <div class="space-y-3">
+                    {% for item in activity_history %}
+                    <div class="flex items-start gap-3 p-3 bg-gray-800 rounded-lg hover:bg-gray-750 transition-colors">
+                        <span class="text-xl mt-0.5">
+                            {% if item.analysis_type == 'report' %}🔬
+                            {% elif item.analysis_type == 'diet' %}🥗
+                            {% elif item.analysis_type == 'exercise' %}💪
+                            {% elif item.analysis_type == 'doctors' %}🏥
+                            {% else %}📊{% endif %}
+                        </span>
+                        <div class="flex-1 min-w-0">
+                            <div class="flex items-center justify-between gap-2">
+                                <span class="badge
+                                    {% if item.analysis_type == 'report' %}badge-blue
+                                    {% elif item.analysis_type == 'diet' %}badge-green
+                                    {% elif item.analysis_type == 'exercise' %}badge-yellow
+                                    {% else %}badge-red{% endif %}">
+                                    {{ item.analysis_type|capitalize }}
+                                </span>
+                                <span class="text-gray-600 text-xs">{{ item.created_at.strftime('%b %d') }}</span>
+                            </div>
+                            <p class="text-gray-400 text-xs mt-1 truncate">{{ item.input_summary }}</p>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+            {% else %}
+                <div class="text-center py-8">
+                    <div class="text-4xl mb-3">📭</div>
+                    <p class="text-gray-500 text-sm">Reports, plans, and doctor searches will appear here.</p>
+                </div>
+            {% endif %}
+        </div>
+    </div>
+
+    <!-- Recent Chat History -->
+    <section class="card mt-6" aria-labelledby="recent-chat-heading">
+        <div class="flex flex-wrap items-center justify-between gap-3 mb-4">
+            <div>
+                <h2 id="recent-chat-heading" class="text-lg font-semibold text-white">🤖 Recent Chat History</h2>
+                <p class="text-gray-500 text-sm mt-1">Your recent questions to the AI health assistant.</p>
+            </div>
+            <a href="{{ url_for('chatbot') }}" class="text-primary-400 hover:text-primary-300 text-sm font-medium">Open AI Chat →</a>
+        </div>
+        {% if chat_history %}
+            <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-3">
+                {% for item in chat_history %}
+                <article class="p-4 bg-gray-800 border border-gray-700 rounded-lg">
+                    <p class="text-gray-200 text-sm leading-relaxed">{{ item.input_summary }}</p>
+                    <time class="block text-gray-500 text-xs mt-3" datetime="{{ item.created_at.isoformat() }}">
+                        {{ item.created_at.strftime('%b %d, %Y · %I:%M %p') }}
+                    </time>
+                </article>
+                {% endfor %}
+            </div>
+        {% else %}
+            <p class="text-gray-500 text-sm py-3">Your recent questions will appear here after you chat with the assistant.</p>
+        {% endif %}
+    </section>
+</div>
+
+<!-- Profile Modal -->
+<div id="profile-modal" class="fixed inset-0 z-50 hidden">
+    <div class="absolute inset-0 bg-black/70 backdrop-blur-sm" onclick="closeProfileModal()"></div>
+    <div class="relative z-10 flex items-center justify-center min-h-screen p-4">
+        <div class="bg-gray-900 border border-gray-700 rounded-2xl w-full max-w-2xl max-h-[90vh] overflow-y-auto animate-fade-up">
+            <div class="flex items-center justify-between p-6 border-b border-gray-800 sticky top-0 bg-gray-900 z-10">
+                <h2 class="text-xl font-bold text-white">✏️ Edit Health Profile</h2>
+                <button onclick="closeProfileModal()" class="text-gray-400 hover:text-white p-2 rounded-lg hover:bg-gray-800">✕</button>
+            </div>
+            <form id="profile-form" class="p-6 space-y-5" onsubmit="saveProfile(event)">
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <div>
+                        <label class="form-label">Age</label>
+                        <input type="number" name="age" min="1" max="120"
+                               value="{{ profile.age or '' }}" class="form-input" placeholder="25">
+                    </div>
+                    <div>
+                        <label class="form-label">Gender</label>
+                        <select name="gender" class="form-select">
+                            <option value="">Select gender</option>
+                            <option value="male" {% if profile and profile.gender == 'male' %}selected{% endif %}>Male</option>
+                            <option value="female" {% if profile and profile.gender == 'female' %}selected{% endif %}>Female</option>
+                            <option value="other" {% if profile and profile.gender == 'other' %}selected{% endif %}>Other</option>
+                            <option value="prefer_not_to_say" {% if profile and profile.gender == 'prefer_not_to_say' %}selected{% endif %}>Prefer not to say</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="form-label">Weight (kg)</label>
+                        <input type="number" name="weight" min="1" max="500" step="0.1"
+                               value="{{ profile.weight or '' }}" class="form-input" placeholder="70">
+                    </div>
+                    <div>
+                        <label class="form-label">Height (cm)</label>
+                        <input type="number" name="height" min="50" max="300"
+                               value="{{ profile.height or '' }}" class="form-input" placeholder="175">
+                    </div>
+                    <div>
+                        <label class="form-label">Blood Group</label>
+                        <select name="blood_group" class="form-select">
+                            <option value="">Select blood group</option>
+                            {% for bg in ['A+', 'A-', 'B+', 'B-', 'AB+', 'AB-', 'O+', 'O-'] %}
+                                <option {% if profile and profile.blood_group == bg %}selected{% endif %}>{{ bg }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div>
+                        <label class="form-label">Activity Level</label>
+                        <select name="activity_level" class="form-select">
+                            <option value="sedentary" {% if profile and profile.activity_level == 'sedentary' %}selected{% endif %}>Sedentary</option>
+                            <option value="light" {% if profile and profile.activity_level == 'light' %}selected{% endif %}>Lightly Active</option>
+                            <option value="moderate" {% if profile and profile.activity_level == 'moderate' %}selected{% endif %}>Moderately Active</option>
+                            <option value="active" {% if profile and profile.activity_level == 'active' %}selected{% endif %}>Very Active</option>
+                            <option value="athlete" {% if profile and profile.activity_level == 'athlete' %}selected{% endif %}>Athlete</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="form-label">Dietary Preference</label>
+                        <select name="dietary_preference" class="form-select">
+                            <option value="none" {% if profile and profile.dietary_preference == 'none' %}selected{% endif %}>No preference</option>
+                            <option value="vegetarian" {% if profile and profile.dietary_preference == 'vegetarian' %}selected{% endif %}>Vegetarian</option>
+                            <option value="vegan" {% if profile and profile.dietary_preference == 'vegan' %}selected{% endif %}>Vegan</option>
+                            <option value="pescatarian" {% if profile and profile.dietary_preference == 'pescatarian' %}selected{% endif %}>Pescatarian</option>
+                            <option value="keto" {% if profile and profile.dietary_preference == 'keto' %}selected{% endif %}>Keto</option>
+                            <option value="paleo" {% if profile and profile.dietary_preference == 'paleo' %}selected{% endif %}>Paleo</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="form-label">Fitness Goal</label>
+                        <input type="text" name="fitness_goal"
+                               value="{{ profile.fitness_goal or '' }}" class="form-input"
+                               placeholder="e.g., Lose 5kg, Build muscle...">
+                    </div>
+                </div>
+                <div>
+                    <label class="form-label">Medical Conditions</label>
+                    <textarea name="medical_conditions" rows="2" class="form-textarea"
+                              placeholder="e.g., Type 2 Diabetes, Hypertension, Asthma...">{{ profile.medical_conditions or '' }}</textarea>
+                </div>
+                <div>
+                    <label class="form-label">Allergies / Intolerances</label>
+                    <textarea name="allergies" rows="2" class="form-textarea"
+                              placeholder="e.g., Peanuts, Lactose, Shellfish...">{{ profile.allergies or '' }}</textarea>
+                </div>
+
+                <div class="flex gap-3 pt-2">
+                    <button type="submit" class="btn-primary flex-1 py-3 justify-center" id="save-profile-btn">
+                        💾 Save Profile
+                    </button>
+                    <button type="button" onclick="closeProfileModal()" class="btn-outline px-6">Cancel</button>
+                </div>
+                <p id="profile-msg" class="text-sm text-center hidden"></p>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script src="{{ url_for('static', filename='js/dashboard.js') }}"></script>
+{% endblock %}

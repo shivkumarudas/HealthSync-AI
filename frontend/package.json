@@ -1,0 +1,40 @@
+{
+  "name": "healthsync-ai-frontend",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "build:backend-css": "tailwindcss -i ../backend/static/css/styles.css -o ../backend/static/css/styles.compiled.css --config tailwind.config.ts",
+    "start": "next start",
+    "lint": "next lint"
+  },
+  "dependencies": {
+    "@next/swc-win32-x64-msvc": "^14.2.5",
+    "axios": "^1.7.7",
+    "caniuse-lite": "^1.0.30001816",
+    "clsx": "^2.1.1",
+    "framer-motion": "^10.18.0",
+    "js-cookie": "^3.0.5",
+    "lucide-react": "^0.446.0",
+    "next": "14.2.5",
+    "react": "^18",
+    "react-dom": "^18",
+    "react-dropzone": "^14.2.3",
+    "react-markdown": "^9.0.1",
+    "remark-gfm": "^4.0.0",
+    "tailwind-merge": "^2.5.2"
+  },
+  "devDependencies": {
+    "@types/js-cookie": "^3.0.6",
+    "@types/node": "^20",
+    "@types/react": "^18",
+    "@types/react-dom": "^18",
+    "autoprefixer": "^10.6.1",
+    "eslint": "^8",
+    "eslint-config-next": "14.2.5",
+    "postcss": "^8",
+    "tailwindcss": "^3.4.1",
+    "typescript": "^5"
+  }
+}

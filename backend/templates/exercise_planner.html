@@ -1,0 +1,139 @@
+{% extends "base.html" %}
+{% block title %}Exercise Planner — HealthSync AI{% endblock %}
+
+{% block content %}
+<div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
+    <div class="text-center mb-10 animate-fade-up">
+        <div class="section-badge"><span>💪</span> AI Fitness Coach</div>
+        <h1 class="page-title mt-2">Exercise <span class="text-gradient">Planner</span></h1>
+        <p class="page-subtitle">Get a customized workout routine based on your fitness level, goals, and available equipment.</p>
+    </div>
+
+    <div class="grid grid-cols-1 lg:grid-cols-5 gap-6">
+        <!-- Form Panel -->
+        <div class="lg:col-span-2">
+            <div class="card sticky top-24">
+                <h2 class="text-lg font-semibold text-white mb-5">⚙️ Workout Settings</h2>
+                <form id="exercise-form" onsubmit="generateExercisePlan(event)" class="space-y-4">
+                    <div class="grid grid-cols-2 gap-3">
+                        <div>
+                            <label class="form-label">Age</label>
+                            <input type="number" name="age" class="form-input" placeholder="25" min="10" max="100">
+                        </div>
+                        <div>
+                            <label class="form-label">Gender</label>
+                            <select name="gender" class="form-select">
+                                <option value="">Select</option>
+                                <option value="male">Male</option>
+                                <option value="female">Female</option>
+                                <option value="other">Other</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="form-label">Weight (kg)</label>
+                            <input type="number" name="weight" class="form-input" placeholder="70" min="1" max="500" step="0.1">
+                        </div>
+                        <div>
+                            <label class="form-label">Height (cm)</label>
+                            <input type="number" name="height" class="form-input" placeholder="175" min="50" max="300">
+                        </div>
+                    </div>
+
+                    <div>
+                        <label class="form-label">Fitness Level</label>
+                        <select name="fitness_level" class="form-select">
+                            <option value="beginner">Beginner (0-6 months)</option>
+                            <option value="intermediate">Intermediate (6-24 months)</option>
+                            <option value="advanced">Advanced (2+ years)</option>
+                        </select>
+                    </div>
+
+                    <div>
+                        <label class="form-label">Primary Goal</label>
+                        <select name="fitness_goal" class="form-select">
+                            <option value="Weight loss">Weight Loss / Fat Burn</option>
+                            <option value="Muscle gain">Muscle Gain / Strength</option>
+                            <option value="General fitness">General Fitness</option>
+                            <option value="Endurance">Endurance / Cardio</option>
+                            <option value="Flexibility">Flexibility / Mobility</option>
+                            <option value="Athletic performance">Athletic Performance</option>
+                            <option value="Rehabilitation">Rehabilitation / Recovery</option>
+                        </select>
+                    </div>
+
+                    <div>
+                        <label class="form-label">Available Equipment</label>
+                        <select name="equipment" class="form-select">
+                            <option value="no equipment (bodyweight only)">No Equipment (Bodyweight)</option>
+                            <option value="minimal/home gym (dumbbells, resistance bands)">Home Gym (Dumbbells, Bands)</option>
+                            <option value="full gym with barbells, machines, and cardio equipment">Full Gym Access</option>
+                            <option value="outdoor (park, running track)">Outdoor Only</option>
+                        </select>
+                    </div>
+
+                    <div class="grid grid-cols-2 gap-3">
+                        <div>
+                            <label class="form-label">Plan Duration</label>
+                            <select name="duration_weeks" class="form-select">
+                                <option value="2">2 Weeks</option>
+                                <option value="4" selected>4 Weeks</option>
+                                <option value="8">8 Weeks</option>
+                                <option value="12">12 Weeks</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="form-label">Days/Week</label>
+                            <select name="days_per_week" class="form-select">
+                                <option value="2">2 Days</option>
+                                <option value="3">3 Days</option>
+                                <option value="4" selected>4 Days</option>
+                                <option value="5">5 Days</option>
+                                <option value="6">6 Days</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div>
+                        <label class="form-label">Injuries / Medical Conditions</label>
+                        <textarea name="medical_conditions" rows="2" class="form-textarea"
+                                  placeholder="Lower back pain, bad knee, etc."></textarea>
+                    </div>
+
+                    <button type="submit" id="exercise-btn" class="btn-primary w-full py-3 justify-center">
+                        💪 Generate Workout Plan
+                    </button>
+                </form>
+            </div>
+        </div>
+
+        <!-- Results Panel -->
+        <div class="lg:col-span-3">
+            <div id="exercise-placeholder" class="card flex flex-col items-center justify-center py-24 text-center min-h-96">
+                <div class="text-6xl mb-4">💪</div>
+                <h3 class="text-xl font-semibold text-gray-300 mb-2">Your Workout Plan Will Appear Here</h3>
+                <p class="text-gray-500 max-w-xs">Customize your settings and click "Generate Workout Plan" to get started.</p>
+            </div>
+            <div id="exercise-loading" class="card hidden flex-col items-center justify-center py-24 text-center min-h-96">
+                <div class="spinner w-16 h-16 border-4 mb-6 mx-auto"></div>
+                <h3 class="text-lg font-semibold text-white mb-2">Building Your Workout Plan…</h3>
+                <p class="text-gray-500 text-sm">AI is designing your personalized exercise program</p>
+            </div>
+            <div id="exercise-result" class="card hidden">
+                <div class="flex items-center justify-between mb-5">
+                    <h2 class="text-lg font-semibold text-white">💪 Your Workout Plan</h2>
+                    <div class="flex gap-2">
+                        <button onclick="copyExercisePlan()" class="btn-sm btn-outline">📋 Copy</button>
+                        <button onclick="downloadExercisePlan()" class="btn-sm btn-outline">💾 Save</button>
+                        <button onclick="resetExercisePlan()" class="btn-sm btn-outline-red">✕ New</button>
+                    </div>
+                </div>
+                <div id="exercise-content" class="markdown-output border-t border-gray-800 pt-5 max-h-[700px] overflow-y-auto"></div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script src="{{ url_for('static', filename='js/exercise.js') }}"></script>
+{% endblock %}
